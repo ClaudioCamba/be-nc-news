@@ -7,7 +7,7 @@ app.use(express.json());
 app.get('/api/topics', getTopics)
 
 app.all('*', (req,res)=>{
-    console.log('OTHER PATH REQUEST')
+    res.status(404).send({msg : 'Not Found'})
 })
 
 app.use((err, req, res, next) => {
