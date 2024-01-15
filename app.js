@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 
-const { getTopics } = require("./controllers/topics.controllers.js")
+const { getTopics, getEndpoints } = require("./controllers/topics.controllers.js")
 
-
+app.get('/api', getEndpoints)
 app.get('/api/topics', getTopics)
 
 app.all('*', (req,res)=>{
@@ -11,10 +11,11 @@ app.all('*', (req,res)=>{
 })
 
 app.use((err, req, res, next) => {
-if (err.status && err.msg) {
-    console.log('OTHER ERROR')
-    res.status(err.status).send({ msg: err.msg });
-} else next(err);
+    if (err.msg === 'Not Found') {
+        res.status(404).send({msg: err.msg});
+    } else if (err.status && err.msg) {
+        res.status(err.status).send({ msg: err.msg });
+    } else next(err);
 });
 
 app.use((err, req, res, next) => {
