@@ -121,3 +121,44 @@ describe("/api/articles", () => {
       });
   });
 });
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET 200 - should receive an array of comments objects matching article_id requested with most recent first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((result) => {
+        expect(Array.isArray(result.body.comments)).toBe(true);
+        expect(result.body.comments).toHaveLength(11);
+        result.body.comments.forEach((comment)=>{
+          expect(comment).toHaveProperty('comment_id');
+          expect(comment).toHaveProperty('body');
+          expect(comment).toHaveProperty('article_id');
+          expect(comment).toHaveProperty('created_at');
+          expect(comment).toHaveProperty('votes');
+          expect(comment).toHaveProperty('author');
+          expect(comment).toHaveProperty('article_id',1);
+        })
+        expect(result.body.comments).toBeSorted({ 
+          key: "created_at",
+          descending: true
+        })
+      });
+  });
+  test("GET 404 - should return 'Not Found' when article id doesn't exist yet", () => {
+    return request(app)
+      .get("/api/articles/99978/comments")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.msg).toBe('Not Found');
+      });
+  });
+  test("GET 400 - should return 'Bad Request' due to incorrect formatted article_id", () => {
+    return request(app)
+      .get("/api/articles/45tes/comments")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe('Bad Request');
+      });
+  });
+});

@@ -36,3 +36,20 @@ exports.articleAddComments = (article) => {
     console.log(err)
   })
 }
+
+exports.checkArticleExists = (id) =>{
+    return db.query(`
+    SELECT * FROM articles
+    WHERE articles.article_id = ${id}
+  `).then((article)=>{
+    if(article.rows.length === 0){
+      return Promise.reject({msg: 'Not Found'});
+    }
+  }).catch((err)=>{
+    if (err.msg === 'Not Found'){
+      return Promise.reject({msg: 'Not Found'});
+    } else {
+      return Promise.reject(err);
+    };
+  });
+}
