@@ -1,3 +1,5 @@
+const db = require("../connection");
+
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
   return { created_at: new Date(created_at), ...otherProperties };
@@ -20,3 +22,17 @@ exports.formatComments = (comments, idLookup) => {
     };
   });
 };
+
+exports.articleAddComments = (article) => {
+  return db.query(`
+    SELECT * FROM comments
+    WHERE comments.article_id = ${article.article_id}
+  `).then((comments) => {
+    article.comments = comments.rows;
+    article.comment_count = comments.rows.length;
+    delete article.body;
+    return article;
+  }).catch((err) => {
+    console.log(err)
+  })
+}

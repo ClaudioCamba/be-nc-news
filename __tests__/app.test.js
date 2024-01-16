@@ -76,3 +76,48 @@ describe("/api/articles/:article_id", () => {
         });
     });
 });
+
+describe("/api/articles", () => {
+  test("GET 200 - should receive an array of articles objects contains specific keys", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        expect(Array.isArray(result.body.articles)).toBe(true);
+        expect(result.body.articles).toHaveLength(13);
+        result.body.articles.forEach((article)=>{
+          expect(article).toHaveProperty('author');
+          expect(article).toHaveProperty('title');
+          expect(article).toHaveProperty('article_id');
+          expect(article).toHaveProperty('topic');
+          expect(article).toHaveProperty('created_at');
+          expect(article).toHaveProperty('votes');
+          expect(article).toHaveProperty('article_img_url');
+          expect(article).toHaveProperty('comment_count');
+        })
+      });
+  });
+  test("GET 200 - should receive an array of article objects in desc order by created_at without the body key", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        result.body.articles.forEach((article)=>{
+          expect(article).not.toHaveProperty('body');
+        });
+
+        expect(result.body.articles).toBeSorted({ 
+          key: "created_at",
+          descending: true
+        })
+      });
+  });
+  test("GET 404 - should receive status 404 and message 'Bad request' when path is incorrect", () => {
+    return request(app)
+      .get("/api/art1cl3s")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.msg).toBe('Not Found')
+      });
+  });
+});
