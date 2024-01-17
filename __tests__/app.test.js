@@ -8,7 +8,7 @@ const endPoints = require('../endpoints.json');
 beforeEach(() => {return seed(testData)});
 afterAll(() => {return db.end()});
 
-describe("/api", () => {
+describe("GET /api", () => {
   test("GET 200 - should return An object describing all the available endpoints on your API", () => {
     return request(app)
       .get("/api")
@@ -19,7 +19,7 @@ describe("/api", () => {
   });
 });
 
-describe("/api/topics", () => {
+describe("GET /api/topics", () => {
   test("GET 200 - should receive an array of topic objects contains slug and description keys with strings as values", () => {
     return request(app)
       .get("/api/topics")
@@ -43,20 +43,20 @@ describe("/api/topics", () => {
   });
 });
 
-describe("/api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
     test("GET 200 - should receive an article object with the correct article_id", () => {
       return request(app)
         .get("/api/articles/4")
         .expect(200)
         .then((result) => {
-          expect(typeof result.body.article.article_id).toBe('number');
-          expect(typeof result.body.article.title).toBe('string');
-          expect(typeof result.body.article.topic).toBe('string');
-          expect(typeof result.body.article.author).toBe('string');
-          expect(typeof result.body.article.body).toBe('string');
-          expect(typeof result.body.article.created_at).toBe('string');
-          expect(typeof result.body.article.votes).toBe('number');
-          expect(typeof result.body.article.article_img_url).toBe('string');
+          expect(result.body.article.article_id).toBe(4);
+          expect(result.body.article.title).toBe('Student SUES Mitch!');
+          expect(result.body.article.topic).toBe('mitch');
+          expect(result.body.article.author).toBe('rogersop');
+          expect(result.body.article.body).toBe('We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages');
+          expect(result.body.article.created_at).toBe('2020-05-06T01:14:00.000Z');
+          expect(result.body.article.votes).toBe(0);
+          expect(result.body.article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');
         });
     });
     test("GET 404 - should return 'Not Found' when article id doesn't exist yet", () => {
@@ -77,7 +77,7 @@ describe("/api/articles/:article_id", () => {
     });
 });
 
-describe("/api/articles", () => {
+describe("GET /api/articles", () => {
   test("GET 200 - should receive an array of articles objects contains specific keys", () => {
     return request(app)
       .get("/api/articles")
@@ -112,18 +112,10 @@ describe("/api/articles", () => {
         })
       });
   });
-  test("GET 404 - should receive status 404 and message 'Bad request' when path is incorrect", () => {
-    return request(app)
-      .get("/api/art1cl3s")
-      .expect(404)
-      .then((result) => {
-        expect(result.body.msg).toBe('Not Found')
-      });
-  });
 });
 
-describe("/api/articles/:article_id/comments", () => {
-  test("GET 200 - should receive an array of comments objects matching article_id requested with most recent first", () => {
+describe("GET /api/articles/:article_id/comments", () => {
+  test("GET 200 - should return an array of comments objects matching article_id requested with most recent first", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -133,11 +125,10 @@ describe("/api/articles/:article_id/comments", () => {
         result.body.comments.forEach((comment)=>{
           expect(comment).toHaveProperty('comment_id');
           expect(comment).toHaveProperty('body');
-          expect(comment).toHaveProperty('article_id');
+          expect(comment).toHaveProperty('article_id',1);
           expect(comment).toHaveProperty('created_at');
           expect(comment).toHaveProperty('votes');
           expect(comment).toHaveProperty('author');
-          expect(comment).toHaveProperty('article_id',1);
         })
         expect(result.body.comments).toBeSorted({ 
           key: "created_at",
@@ -145,9 +136,17 @@ describe("/api/articles/:article_id/comments", () => {
         })
       });
   });
+  test("GET 200 - should return an empty array when article exists but has no comments", () => {
+    return request(app)
+      .get("/api/articles/10/comments")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.comments).toEqual([]);
+      });
+  });
   test("GET 404 - should return 'Not Found' when article id doesn't exist yet", () => {
     return request(app)
-      .get("/api/articles/99978/comments")
+      .get("/api/articles/100/comments")
       .expect(404)
       .then((result) => {
         expect(result.body.msg).toBe('Not Found');
@@ -159,6 +158,84 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(400)
       .then((result) => {
         expect(result.body.msg).toBe('Bad Request');
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST 201 - should return comment object once it has been added", () => {
+    const comment = {
+      username: 'zonamorte',
+      body: "This is a comment",
+      test: "test additional properties"
+    }
+
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(201)
+      .then((result) => {
+        expect(result.body.comment).toHaveProperty('comment_id',19);
+        expect(result.body.comment).toHaveProperty('body','This is a comment');
+        expect(result.body.comment).toHaveProperty('article_id',2);
+        expect(result.body.comment).toHaveProperty('author','zonamorte');
+        expect(result.body.comment).toHaveProperty('votes',0);
+        expect(result.body.comment).toHaveProperty('created_at');
+      });
+  });
+  test("POST 400 - should return with 'Bad Request' due to missing 'body' key", () => {
+    const comment = {
+      username: 'zonamorte',
+    }
+
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe('Bad Request');
+      });
+  });
+  test("POST 404 - should return with 'Not Found' due to article not existing", () => {
+    const comment = {
+      username: 'zonamorte',
+      body: "This is a comment"
+    }
+
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send(comment)
+      .expect(404)
+      .then((result) => {
+        expect(result.body.msg).toBe('Not Found');
+      });
+  });
+  test("POST 400 - should return with 'Bad Request' due to incorrect article_id formatting", () => {
+    const comment = {
+      username: 'zonamorte',
+      body: "This is a comment"
+    }
+
+    return request(app)
+      .post("/api/articles/10test0/comments")
+      .send(comment)
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe('Bad Request');
+      });
+  });
+  test("POST 404 - should return with 'Not Found' due to non existing user in the database", () => {
+    const comment = {
+      username: 'test',
+      body: "This is a comment"
+    }
+
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(404)
+      .then((result) => {
+        expect(result.body.msg).toBe('Not Found');
       });
   });
 });

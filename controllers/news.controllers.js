@@ -3,7 +3,8 @@ const {
     selectEndpoints, 
     selectArticles, 
     selectArticleById,
-    selectCommentsById
+    selectCommentsById,
+    insertCommentsById
 } = require('../models/news.models')
 
 
@@ -41,3 +42,10 @@ exports.getCommentsById = (req, res, next) => {
         res.status(200).send({ comments });
     }).catch(next);
 }
+
+exports.postCommentsById = (req, res, next) => {
+    insertCommentsById(req.body, req.params)
+    .then((comment)=> {
+        res.status(201).send({ comment });
+    }).catch(next);
+} 
