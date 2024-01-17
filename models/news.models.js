@@ -1,7 +1,11 @@
 const db = require("../db/connection");
+const format = require('pg-format');
+
 const {
-    articleAddComments,
-    checkArticleExists
+    checkArticleExists,
+    convertTimestampToDate,
+    createRef,
+    formatComments,
 } = require('../db/seeds/utils')
 
 exports.selectEndpoints = () => {
@@ -30,19 +34,21 @@ exports.selectTopics = () => {
 
 exports.selectArticles = () => {
     return db.query(`
-    SELECT * FROM articles
-    ORDER BY created_at DESC;
+    SELECT 
+    articles.author,
+    articles.title,
+    articles.article_id,
+    articles.topic,
+    articles.created_at,
+    articles.votes,
+    articles.article_img_url,
+    COUNT(comment_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON comments.article_id = articles.article_id
+    GROUP BY articles.article_id
+    ORDER BY created_at DESC
     `).then((articles)=>{
-        const commentedArticles = articles.rows.map((article)=>{
-            return articleAddComments(article);
-        });
-
-        return Promise.all(commentedArticles)
-        .then((allArticles)=>{
-            return allArticles;
-        }). catch((error)=>{
-            console.log(error)
-        });
+        return articles.rows;
     }).catch((err)=>{
         return Promise.reject(err);
     })
@@ -63,8 +69,8 @@ exports.selectArticleById = (param) => {
     })
 }
 
-exports.selectCommentsById = (param) => {
-    const id = param.article_id;
+exports.selectCommentsById = (request) => {
+    const id = request.article_id;
     const getComments = (articleId) => db.query(`
     SELECT * FROM comments
     WHERE comments.article_id = ${articleId}
@@ -79,6 +85,40 @@ exports.selectCommentsById = (param) => {
     return Promise.all(queries)
     .then((comments)=>{
        return comments[0].rows;
+    }).catch((err)=>{
+        return Promise.reject(err);
+    })
+}
+
+exports.insertCommentsById = (reqBody, reqParams) => {
+    const commentData = [{
+        body: reqBody.body,
+        votes: reqBody.votes || 0,
+        author: reqBody.username,
+        article_id: reqParams.article_id,
+        created_at: Date.now()
+    }];
+
+    return db.query(`SELECT * FROM articles`)
+    .then((articles) => {
+        const articleIdLookup = createRef(articles.rows, 'title', 'article_id');
+        const formattedCommentData = formatComments(commentData, articleIdLookup);
+
+        const insertCommentsQueryStr = format(
+            'INSERT INTO comments (body, author, article_id, votes, created_at) VALUES %L RETURNING *;',
+            formattedCommentData.map(
+                ({ body, author, article_id, votes = 0, created_at }) => [
+                body,
+                author,
+                article_id,
+                votes,
+                created_at,
+                ])
+        );
+        
+        return db.query(insertCommentsQueryStr)
+    }).then((response)=>{
+        return response.rows[0];
     }).catch((err)=>{
         return Promise.reject(err);
     })

@@ -97,9 +97,10 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return db.query(insertArticlesQueryStr);
     })
     .then(({ rows: articleRows }) => {
+     
       const articleIdLookup = createRef(articleRows, 'title', 'article_id');
       const formattedCommentData = formatComments(commentData, articleIdLookup);
-
+   
       const insertCommentsQueryStr = format(
         'INSERT INTO comments (body, author, article_id, votes, created_at) VALUES %L;',
         formattedCommentData.map(

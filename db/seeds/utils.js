@@ -23,20 +23,6 @@ exports.formatComments = (comments, idLookup) => {
   });
 };
 
-exports.articleAddComments = (article) => {
-  return db.query(`
-    SELECT * FROM comments
-    WHERE comments.article_id = ${article.article_id}
-  `).then((comments) => {
-    article.comments = comments.rows;
-    article.comment_count = comments.rows.length;
-    delete article.body;
-    return article;
-  }).catch((err) => {
-    console.log(err)
-  })
-}
-
 exports.checkArticleExists = (id) =>{
     return db.query(`
     SELECT * FROM articles
