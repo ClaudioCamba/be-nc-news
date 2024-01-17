@@ -13,7 +13,8 @@ const {
     getArticles, 
     getArticleById,
     getCommentsById,
-    postCommentsById
+    postCommentsById,
+    patchArticleById
 } = require("./controllers/news.controllers.js")
 
 app.use(express.json());
@@ -26,9 +27,10 @@ app.get('/api/articles/:article_id/comments', getCommentsById)
 
 app.post('/api/articles/:article_id/comments', postCommentsById)
 
-  app.all('*',handleEndpointError);
-  app.use(handleCustomErrors);
-  app.use(handlePsqlErrors);
-  app.use(handleServerErrors);
+
+app.all('*',handleEndpointError);
+app.use(handleCustomErrors);
+app.use(handlePsqlErrors);
+app.use(handleServerErrors);
 
 module.exports = app

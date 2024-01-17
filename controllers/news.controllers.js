@@ -4,7 +4,8 @@ const {
     selectArticles, 
     selectArticleById,
     selectCommentsById,
-    insertCommentsById
+    insertCommentsById,
+    updateArticleById
 } = require('../models/news.models')
 
 
@@ -48,4 +49,5 @@ exports.postCommentsById = (req, res, next) => {
     .then((comment)=> {
         res.status(201).send({ comment });
     }).catch(next);
-} 
+}
+

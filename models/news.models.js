@@ -3,7 +3,6 @@ const format = require('pg-format');
 
 const {
     checkArticleExists,
-    convertTimestampToDate,
     createRef,
     formatComments,
 } = require('../db/seeds/utils')
@@ -121,3 +120,4 @@ exports.insertCommentsById = (reqBody, reqParams) => {
         return Promise.reject(err);
     })
 }
+
