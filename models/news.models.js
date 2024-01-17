@@ -93,10 +93,8 @@ exports.selectCommentsById = (request) => {
 exports.insertCommentsById = (reqBody, reqParams) => {
     const commentData = [{
         body: reqBody.body,
-        votes: reqBody.votes || 0,
         author: reqBody.username,
         article_id: reqParams.article_id,
-        created_at: Date.now()
     }];
 
     return db.query(`SELECT * FROM articles`)
@@ -107,16 +105,16 @@ exports.insertCommentsById = (reqBody, reqParams) => {
         const insertCommentsQueryStr = format(
             'INSERT INTO comments (body, author, article_id, votes, created_at) VALUES %L RETURNING *;',
             formattedCommentData.map(
-                ({ body, author, article_id, votes = 0, created_at }) => [
-                body,
-                author,
-                article_id,
-                votes,
-                created_at,
+                (comment) => [
+                comment.body,
+                comment.author,
+                comment.article_id,
+                comment.votes = 0,
+                comment.created_at,
                 ])
         );
         
-        return db.query(insertCommentsQueryStr)
+        return db.query(insertCommentsQueryStr);
     }).then((response)=>{
         return response.rows[0];
     }).catch((err)=>{
