@@ -121,3 +121,19 @@ exports.insertCommentsById = (reqBody, reqParams) => {
     })
 }
 
+exports.updateArticleById = (reqBody, reqParams) => {
+    return db.query(`
+    UPDATE articles
+    SET
+      votes = votes + ${reqBody.inc_votes}
+    WHERE articles.article_id = ${reqParams.article_id}
+    RETURNING *;
+    `).then((article)=>{
+        if (article.rows.length === 0) {
+            return Promise.reject({msg: 'Not Found'});
+        }
+        return article.rows[0];
+    }).catch((err)=>{
+        return Promise.reject(err);
+    });
+}

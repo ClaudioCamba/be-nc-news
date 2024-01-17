@@ -51,3 +51,9 @@ exports.postCommentsById = (req, res, next) => {
     }).catch(next);
 }
 
+exports.patchArticleById = (req, res, next) => {
+    updateArticleById(req.body, req.params)
+    .then((article)=> {
+        res.status(200).send({ article });
+    }).catch(next);
+}

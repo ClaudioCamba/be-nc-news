@@ -239,3 +239,62 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("PATCH 200 - should return with updated article", () => {
+    const votes = { inc_votes : -50 }
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(votes)
+      .expect(200)
+      .then((result) => {
+        expect(result.body.article).toHaveProperty('article_id', 1);
+        expect(result.body.article).toHaveProperty('votes', 50);
+      });
+  })
+  test("PATCH 404 - should return 'Not Found' due to article not existing yet", () => {
+    const votes = { inc_votes : -50 }
+
+    return request(app)
+      .patch("/api/articles/100")
+      .send(votes)
+      .expect(404)
+      .then((result) => {
+        expect(result.body.msg).toBe('Not Found');
+      });
+  })
+  test("PATCH 400 - should return 'Bad Request' due to incorrect article id formatting", () => {
+    const votes = { inc_votes : -50 }
+
+    return request(app)
+      .patch("/api/articles/5t6y")
+      .send(votes)
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe('Bad Request');
+      });
+  })
+  test("PATCH 400 - should return 'Bad Request' due to incorrect object keys", () => {
+    const votes = { not_votes : -50, test: 'test' }
+
+    return request(app)
+      .patch("/api/articles/2")
+      .send(votes)
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe('Bad Request');
+      });
+  })
+  test("PATCH 400 - should return 'Bad Request' due to incorrect object values", () => {
+    const votes = { inc_votes : true }
+
+    return request(app)
+      .patch("/api/articles/2")
+      .send(votes)
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe('Bad Request');
+      });
+  })
+});
