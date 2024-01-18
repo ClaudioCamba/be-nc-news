@@ -21,7 +21,9 @@ exports.handlePsqlErrors = (err, req, res, next) => {
 };
 
 exports.handleCustomErrors = (err, req, res, next) => {
-    if (err.msg === 'Not Found') {
+    if (err.code === 'MODULE_NOT_FOUND'){
+        res.status(404).send({msg: 'Not Found'});
+    } else if (err.msg === 'Not Found') {
         res.status(404).send({msg: err.msg});
     } else if (err.status && err.msg) {
         res.status(err.status).send({ msg: err.msg });

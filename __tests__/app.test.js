@@ -349,3 +349,28 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 })
+
+describe("GET /api/users", () => {
+  test('GET 200 - should return array of user objects containing specific keys', ()=> {
+    return request(app)
+    .get("/api/users")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.users)).toBe(true);
+      expect(result.body.users.length).toBe(5);
+      result.body.users.forEach((user)=>{
+        expect(user).toHaveProperty('username');
+        expect(user).toHaveProperty('name');
+        expect(user).toHaveProperty('avatar_url');
+      });
+    });
+  });
+  test('GET 400 - should respond with "Not Found" due to path not existing yet', ()=> {
+    return request(app)
+    .get("/api/not-user")
+    .expect(404)
+    .then((result) => {
+      expect(result.body.msg).toBe('Not Found');
+    });
+  })
+});

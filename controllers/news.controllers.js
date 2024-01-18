@@ -1,4 +1,5 @@
 const {
+    selectUsers,
     selectTopics, 
     selectEndpoints, 
     selectArticles, 
@@ -65,3 +66,10 @@ exports.deleteCommentsById = (req, res, next) => {
         res.status(204).send();
     }).catch(next);
 };
+
+exports.getUsers = (req, res, next) => {
+    selectUsers()
+    .then((users) =>{
+        res.status(200).send({ users });
+    }).catch(next);
+}
