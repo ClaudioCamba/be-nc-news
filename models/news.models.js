@@ -5,6 +5,8 @@ const {
     checkArticleExists,
     createRef,
     formatComments,
+    checkTopicExists,
+    checkValidQueries
 } = require('../db/seeds/utils')
 
 exports.selectEndpoints = () => {
@@ -24,50 +26,62 @@ exports.selectTopics = () => {
 };
 
 exports.selectArticles = (reqQuery) => {
-    const qualifiedQuery = ['topic'];
-  
-    if (Object.keys(reqQuery).length > 0){
-        const queryArr = Object.keys(reqQuery);
-        for (let i = 0; i < queryArr.length; i++) {
-            if (!qualifiedQuery.includes(queryArr[i])){
-                return Promise.reject({msg: 'Not Found'});
-            }
-        }
-    };
-
-    let topicQuery = '', bodyColumn = '';
-    if (reqQuery.topic){
-        topicQuery = `WHERE topic = '${reqQuery.topic}'`;
-        bodyColumn = `articles.body,`
+    
+    if(!checkValidQueries(reqQuery)){
+        return Promise.reject({msg: 'Not Found'})
     }
 
-    return db.query(`
-    SELECT 
+    let articleStr1 =`
+    SELECT
     articles.author,
     articles.title,
     articles.article_id,
     articles.topic,
     articles.created_at,
     articles.votes,
-    articles.article_img_url,
-    ${bodyColumn}
+    articles.article_img_url,`;
+
+    let articleStr2 = `
     COUNT(comment_id) AS comment_count
     FROM articles
-    LEFT JOIN comments ON comments.article_id = articles.article_id
-    ${topicQuery}
+    LEFT JOIN comments ON comments.article_id = articles.article_id`;
+
+    let articleStr3 = `
     GROUP BY articles.article_id
-    ORDER BY created_at DESC
-    `).then((articles)=>{
-        return articles.rows;
-    });
+    ORDER BY created_at DESC`;
+    
+    const fullStr = () => articleStr1 + articleStr2 + articleStr3;
+    let promiseFunction = db.query(fullStr());
+    let queryExists = false;
+    
+    if (reqQuery.topic){
+        promiseFunction = checkTopicExists(reqQuery)
+        .then((data)=>{
+            if(data) {
+                articleStr1 += ` articles.*,`;
+                articleStr2 += ` WHERE topic = $1`;
+                queryExists = true;
+            }
+            
+            return db.query(fullStr(), [reqQuery.topic]);
+        });
+    }
+ 
+    return promiseFunction.then((articles)=>{
+
+        if (queryExists) {
+            return articles.rows;
+        } else if (articles.rows.length === 0){
+            return Promise.reject({ msg: 'Not Found' });
+        } else return articles.rows;
+    })
 }
 
 exports.selectArticleById = (param) => {
-    const id = param.article_id;
     return db.query(`
     SELECT * FROM articles
-    WHERE articles.article_id = ${id}
-    `).then((articles)=>{
+    WHERE articles.article_id = $1`,[param.article_id])
+    .then((articles)=>{
         if (articles.rows.length === 0) {
             return Promise.reject({msg: 'Not Found'});
         }
@@ -79,8 +93,8 @@ exports.selectCommentsById = (request) => {
     const id = request.article_id;
     const getComments = (articleId) => db.query(`
     SELECT * FROM comments
-    WHERE comments.article_id = ${articleId}
-    ORDER BY created_at DESC`);
+    WHERE comments.article_id = $1
+    ORDER BY created_at DESC`, [articleId]);
 
     const queries = [getComments(id)];
     if (id){

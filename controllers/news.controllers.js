@@ -7,7 +7,7 @@ const {
     selectCommentsById,
     insertCommentsById,
     updateArticleById,
-    removeCommentById
+    removeCommentById,
 } = require('../models/news.models')
 
 

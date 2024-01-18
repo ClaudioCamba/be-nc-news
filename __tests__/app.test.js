@@ -379,18 +379,19 @@ describe("GET /api/users", () => {
 describe("GET /api/articles (topic query)", () => {
   test('GET 200 - should return array of user objects containing specific keys', ()=> {
     return request(app)
-    .get("/api/articles?topic=cats")
+    .get("/api/articles?topic=mitch")
     .expect(200)
     .then((result) => {
       expect(Array.isArray(result.body.articles)).toBe(true);
-      expect(result.body.articles.length).toBe(1);
-      expect(result.body.articles[0]).toHaveProperty('title', 'UNCOVERED: catspiracy to bring down democracy');
-      expect(result.body.articles[0]).toHaveProperty('topic', 'cats');
-      expect(result.body.articles[0]).toHaveProperty('author', 'rogersop');
-      expect(result.body.articles[0]).toHaveProperty('body', 'Bastet walks amongst us, and the cats are taking arms!');
-      expect(result.body.articles[0]).toHaveProperty('created_at','2020-08-03T13:14:00.000Z');
-      expect(result.body.articles[0]).toHaveProperty('votes',0);
-      expect(result.body.articles[0]).toHaveProperty('article_img_url', 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');
+      expect(result.body.articles.length).toBe(12);
+      result.body.articles.forEach((article)=>{
+        expect(article).toHaveProperty('title');
+        expect(article).toHaveProperty('topic', 'mitch');
+        expect(article).toHaveProperty('author');
+        expect(article).toHaveProperty('created_at');
+        expect(article).toHaveProperty('votes');
+        expect(article).toHaveProperty('article_img_url');
+      });
     });
   });
   test('GET 404 - should return "Not Found" due to query not existing', ()=> {
@@ -401,30 +402,39 @@ describe("GET /api/articles (topic query)", () => {
       expect(result.body.msg).toBe('Not Found')
     });
   });
-  test('GET 200 - should return with an empty array due to topic value not existing', ()=> {
+  test('GET 404 - should return "Not Found" due to query not existing', ()=> {
     return request(app)
     .get("/api/articles?topic=4566")
-    .expect(200)
+    .expect(404)
     .then((result) => {
-      expect(result.body.articles).toEqual([])
+      expect(result.body.msg).toBe('Not Found')
     });
   });
   test('GET 200 - should return array of user objects containing specific keys', ()=> {
     return request(app)
-    .get("/api/articles?topic=mitch")
+    .get("/api/articles?topic=cats")
     .expect(200)
     .then((result) => {
       expect(Array.isArray(result.body.articles)).toBe(true);
-      expect(result.body.articles.length).toBe(12);
+      expect(result.body.articles.length).toBe(1);
       result.body.articles.forEach((article)=>{
         expect(article).toHaveProperty('title');
-        expect(article).toHaveProperty('topic', 'mitch');
+        expect(article).toHaveProperty('topic', 'cats');
         expect(article).toHaveProperty('author');
         expect(article).toHaveProperty('body');
         expect(article).toHaveProperty('created_at');
         expect(article).toHaveProperty('votes');
         expect(article).toHaveProperty('article_img_url');
       });
+    });
+  });
+  test('GET 200 - should return an empty array as the topic exists but no article with that topic', ()=> {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles.length).toBe(0);
     });
   });
 });
