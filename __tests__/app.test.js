@@ -298,3 +298,30 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   })
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("DELETE 204 - should respond with 'No Content' once the comment has been deleted", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .expect(204)
+      .then((result) => {
+        expect(result.res.statusMessage).toBe('No Content');
+      });
+  });
+  test("DELETE 404 - should respond with 'Not Found' due to comment not existing yet", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.msg).toBe('Not Found');
+      });
+  });
+  test("DELETE 400 - should respond with 'Bad Request' due to invalid comment id", () => {
+    return request(app)
+      .delete("/api/comments/34TY")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe('Bad Request');
+      });
+  });
+})
