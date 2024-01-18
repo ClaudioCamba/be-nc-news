@@ -23,7 +23,24 @@ exports.selectTopics = () => {
     });
 };
 
-exports.selectArticles = () => {
+exports.selectArticles = (reqQuery) => {
+    const qualifiedQuery = ['topic'];
+  
+    if (Object.keys(reqQuery).length > 0){
+        const queryArr = Object.keys(reqQuery);
+        for (let i = 0; i < queryArr.length; i++) {
+            if (!qualifiedQuery.includes(queryArr[i])){
+                return Promise.reject({msg: 'Not Found'});
+            }
+        }
+    };
+
+    let topicQuery = '', bodyColumn = '';
+    if (reqQuery.topic){
+        topicQuery = `WHERE topic = '${reqQuery.topic}'`;
+        bodyColumn = `articles.body,`
+    }
+
     return db.query(`
     SELECT 
     articles.author,
@@ -33,9 +50,11 @@ exports.selectArticles = () => {
     articles.created_at,
     articles.votes,
     articles.article_img_url,
+    ${bodyColumn}
     COUNT(comment_id) AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id
+    ${topicQuery}
     GROUP BY articles.article_id
     ORDER BY created_at DESC
     `).then((articles)=>{
