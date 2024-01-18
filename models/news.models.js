@@ -12,12 +12,6 @@ exports.selectEndpoints = () => {
         resolve(require("../endpoints.json"));
     }).then((endpointData) => {
         return endpointData;
-    }).catch((err)=>{
-        if (err.code === 'MODULE_NOT_FOUND'){
-            return Promise.reject({msg: 'Not Found'});
-        } else {
-            return Promise.reject(err);
-        }
     });
 };
 
@@ -26,8 +20,6 @@ exports.selectTopics = () => {
         SELECT * FROM topics;
     `).then((topics)=>{
         return topics.rows;
-    }).catch((err)=>{
-        console.log('CATCH ERROR')
     });
 };
 
@@ -48,9 +40,7 @@ exports.selectArticles = () => {
     ORDER BY created_at DESC
     `).then((articles)=>{
         return articles.rows;
-    }).catch((err)=>{
-        return Promise.reject(err);
-    })
+    });
 }
 
 exports.selectArticleById = (param) => {
@@ -63,9 +53,7 @@ exports.selectArticleById = (param) => {
             return Promise.reject({msg: 'Not Found'});
         }
        return articles.rows[0];
-    }).catch((err)=>{
-        return Promise.reject(err);
-    })
+    });
 }
 
 exports.selectCommentsById = (request) => {
@@ -84,9 +72,7 @@ exports.selectCommentsById = (request) => {
     return Promise.all(queries)
     .then((comments)=>{
        return comments[0].rows;
-    }).catch((err)=>{
-        return Promise.reject(err);
-    })
+    });
 }
 
 exports.insertCommentsById = (reqBody, reqParams) => {
@@ -116,9 +102,7 @@ exports.insertCommentsById = (reqBody, reqParams) => {
         return db.query(insertCommentsQueryStr);
     }).then((response)=>{
         return response.rows[0];
-    }).catch((err)=>{
-        return Promise.reject(err);
-    })
+    });
 }
 
 exports.updateArticleById = (reqBody, reqParams) => {
@@ -133,8 +117,6 @@ exports.updateArticleById = (reqBody, reqParams) => {
             return Promise.reject({msg: 'Not Found'});
         }
         return article.rows[0];
-    }).catch((err)=>{
-        return Promise.reject(err);
     });
 }
 
@@ -148,5 +130,5 @@ exports.removeCommentById = (reqParams) => {
             return Promise.reject({msg: 'Not Found'})
         }
         return response.rows;
-    })
+    });
 }
