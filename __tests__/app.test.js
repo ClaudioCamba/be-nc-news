@@ -241,7 +241,7 @@ describe("POST /api/articles/:article_id/comments", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-  test("PATCH 200 - should return with updated article", () => {
+  test("PATCH 200 - should return article with reduced votes from 100 to  -50", () => {
     const votes = { inc_votes : -50 }
 
     return request(app)
@@ -250,7 +250,31 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .then((result) => {
         expect(result.body.article).toHaveProperty('article_id', 1);
+        expect(result.body.article).toHaveProperty('title', 'Living in the shadow of a great man');
+        expect(result.body.article).toHaveProperty('topic', 'mitch');
         expect(result.body.article).toHaveProperty('votes', 50);
+        expect(result.body.article).toHaveProperty('author', 'butter_bridge');
+        expect(result.body.article).toHaveProperty('body', 'I find this existence challenging');
+        expect(result.body.article).toHaveProperty('created_at', '2020-07-09T20:11:00.000Z');
+        expect(result.body.article).toHaveProperty('article_img_url', 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');
+      });
+  })
+  test("PATCH 200 - should return article with added votes from 0 to  50", () => {
+    const votes = { inc_votes : +50 }
+
+    return request(app)
+      .patch("/api/articles/2")
+      .send(votes)
+      .expect(200)
+      .then((result) => {
+        expect(result.body.article).toHaveProperty('article_id', 2);
+        expect(result.body.article).toHaveProperty('title', 'Sony Vaio; or, The Laptop');
+        expect(result.body.article).toHaveProperty('topic', 'mitch');
+        expect(result.body.article).toHaveProperty('votes', 50);
+        expect(result.body.article).toHaveProperty('author', 'icellusedkars');
+        expect(result.body.article).toHaveProperty('body', 'Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.');
+        expect(result.body.article).toHaveProperty('created_at', '2020-10-16T05:03:00.000Z');
+        expect(result.body.article).toHaveProperty('article_img_url', 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');
       });
   })
   test("PATCH 404 - should return 'Not Found' due to article not existing yet", () => {

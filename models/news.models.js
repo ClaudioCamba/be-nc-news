@@ -125,10 +125,10 @@ exports.updateArticleById = (reqBody, reqParams) => {
     return db.query(`
     UPDATE articles
     SET
-      votes = votes + ${reqBody.inc_votes}
-    WHERE articles.article_id = ${reqParams.article_id}
-    RETURNING *;
-    `).then((article)=>{
+      votes = votes + $1
+    WHERE articles.article_id = $2
+    RETURNING *;`, [reqBody.inc_votes,reqParams.article_id])
+    .then((article)=>{
         if (article.rows.length === 0) {
             return Promise.reject({msg: 'Not Found'});
         }
