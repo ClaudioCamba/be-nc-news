@@ -137,3 +137,18 @@ exports.updateArticleById = (reqBody, reqParams) => {
         return Promise.reject(err);
     });
 }
+
+exports.removeCommentById = (reqParams) => {
+    return db.query(`
+    DELETE FROM comments
+    WHERE comment_id = $1
+    RETURNING *`, [reqParams.comment_id])
+    .then((response)=>{
+        if (response.rows.length === 0){
+            return Promise.reject({msg: 'Not Found'})
+        }
+        return response.rows;
+    }).catch((err)=>{
+        return Promise.reject(err);
+    });
+}
