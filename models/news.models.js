@@ -148,7 +148,5 @@ exports.removeCommentById = (reqParams) => {
             return Promise.reject({msg: 'Not Found'})
         }
         return response.rows;
-    }).catch((err)=>{
-        return Promise.reject(err);
-    });
+    })
 }
