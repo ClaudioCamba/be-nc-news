@@ -58,6 +58,23 @@ describe("GET /api/articles/:article_id", () => {
           expect(result.body.article.created_at).toBe('2020-05-06T01:14:00.000Z');
           expect(result.body.article.votes).toBe(0);
           expect(result.body.article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');
+          expect(result.body.article.comment_count).toBe('0');
+        });
+    });
+    test("GET 200 - should receive an article object with the correct article_id", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((result) => {
+          expect(result.body.article).toHaveProperty('article_id',1);
+          expect(result.body.article).toHaveProperty('title','Living in the shadow of a great man');
+          expect(result.body.article).toHaveProperty('topic','mitch');
+          expect(result.body.article).toHaveProperty('author','butter_bridge');
+          expect(result.body.article).toHaveProperty('body','I find this existence challenging');
+          expect(result.body.article).toHaveProperty('created_at','2020-07-09T20:11:00.000Z');
+          expect(result.body.article).toHaveProperty('votes',100);
+          expect(result.body.article).toHaveProperty('article_img_url','https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');
+          expect(result.body.article).toHaveProperty('comment_count','11');
         });
     });
     test("GET 404 - should return 'Not Found' when article id doesn't exist yet", () => {

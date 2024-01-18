@@ -79,8 +79,13 @@ exports.selectArticles = (reqQuery) => {
 
 exports.selectArticleById = (param) => {
     return db.query(`
-    SELECT * FROM articles
-    WHERE articles.article_id = $1`,[param.article_id])
+    SELECT articles.*, 
+    COUNT(CAST(comment_id AS INT)) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON comments.article_id = articles.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id;
+    `,[param.article_id])
     .then((articles)=>{
         if (articles.rows.length === 0) {
             return Promise.reject({msg: 'Not Found'});
