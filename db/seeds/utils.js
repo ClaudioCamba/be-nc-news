@@ -44,7 +44,7 @@ exports.checkTopicExists = (reqTopic) => {
       } 
 
       return true;
-    })
+    });
 }
 
 exports.checkValidQueries = (reqQuery) => {
