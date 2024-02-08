@@ -183,6 +183,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     const comment = {
       username: 'zonamorte',
       body: "This is a comment",
+      created_at: 1604113380000,
       test: "test additional properties"
     }
 

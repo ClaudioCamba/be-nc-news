@@ -118,6 +118,7 @@ exports.insertCommentsById = (reqBody, reqParams) => {
         body: reqBody.body,
         author: reqBody.username,
         article_id: reqParams.article_id,
+        created_at: reqBody.created_at
     }];
 
     return db.query(`SELECT * FROM articles`)
@@ -133,7 +134,7 @@ exports.insertCommentsById = (reqBody, reqParams) => {
                 comment.author,
                 comment.article_id,
                 comment.votes = 0,
-                comment.created_at,
+                comment.created_at
                 ])
         );
         
