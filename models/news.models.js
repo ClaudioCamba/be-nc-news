@@ -53,6 +53,8 @@ exports.selectArticles = (reqQuery) => {
     const fullStr = () => articleStr1 + articleStr2 + articleStr3;
     let promiseFunction = db.query(fullStr());
     let queryExists = false;
+
+    console.log(reqQuery)
     
     if (reqQuery.topic){
         promiseFunction = checkTopicExists(reqQuery)

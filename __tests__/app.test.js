@@ -454,3 +454,32 @@ describe("GET /api/articles (topic query)", () => {
     });
   });
 });
+
+describe('GET /api/articles (sorting queries)', () => { 
+  test('GET 200 - should return array of articles objects sorted by created_at and desc order', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=created_at")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles).toBeSorted({ 
+        key: "created_at",
+        descending: true
+      })
+    });
+   })
+
+   xtest('GET 200 - should return array of articles objects sorted by article_id and desc order', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=article_id")
+    .expect(200)
+    .then((result) => {
+      console.log(result.body.articles)
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles).toBeSorted({ 
+        key: "article_id",
+        descending: true
+      })
+    });
+   })
+ })
