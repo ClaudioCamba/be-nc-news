@@ -540,7 +540,7 @@ describe('GET /api/articles (sorting queries)', () => {
     });
    })
 
-   test('GET 400 - should return error due "sort_by=test" not existing yet', () => { 
+   test('GET 404 - should return error due "sort_by=test" not existing yet', () => { 
     return request(app)
     .get("/api/articles?sort_by=test")
     .expect(404)
@@ -556,7 +556,7 @@ describe('GET /api/articles (sorting queries)', () => {
       expect(result.body.msg).toBe('Not Found');
     });
    })
-   test('GET 400 - should return error due "sort_by=test" not existing yet', () => { 
+   test('GET 404 - should return error due "sort_by=test" not existing yet', () => { 
     return request(app)
     .get("/api/articles?sort_by=test&order=test")
     .expect(404)
@@ -564,7 +564,7 @@ describe('GET /api/articles (sorting queries)', () => {
       expect(result.body.msg).toBe('Invalid order query');
     });
    })
-   test('GET 400 - should return error due "sort_by=test" not existing yet', () => { 
+   test('GET 404 - should return error due "sort_by=test" not existing yet', () => { 
     return request(app)
     .get("/api/articles?sort_by=test&ordered=desc")
     .expect(404)
@@ -573,4 +573,45 @@ describe('GET /api/articles (sorting queries)', () => {
     });
    })
 
- })
+})
+
+ describe('GET /api/users/:username', () => { 
+  test('GET 200 - should return user object containing username, avatr_url and name properties', () => { 
+    return request(app)
+    .get("/api/users/zonamorte")
+    .expect(200)
+    .then((result)=>{
+      console.log(result.body.user)
+      expect(result.body.user.username).toBe("zonamorte")
+      expect(result.body.user.name).toBe("claudio")
+      expect(result.body.user).toHaveProperty('avatar_url');
+    });
+   })
+  test('GET 200 - should return user object containing username, avatr_url and name properties', () => { 
+    return request(app)
+    .get("/api/users/butter_bridge")
+    .expect(200)
+    .then((result)=>{
+      console.log(result.body.user)
+      expect(result.body.user.username).toBe("butter_bridge")
+      expect(result.body.user.name).toBe("jonny")
+      expect(result.body.user).toHaveProperty('avatar_url');
+    });
+   })
+   test('GET 404 - should return error "Not Found" as none of the users contain that username', () => { 
+    return request(app)
+    .get("/api/users/testing_name")
+    .expect(404)
+    .then((result)=>{
+      expect(result.body.msg).toBe("Not Found")
+    });
+   })
+   test('GET 404 - should return error "Not Found" as the path /user is missing an s', () => { 
+    return request(app)
+    .get("/api/user/butter_bridge")
+    .expect(404)
+    .then((result)=>{
+      expect(result.body.msg).toBe("Not Found")
+    });
+   })
+})

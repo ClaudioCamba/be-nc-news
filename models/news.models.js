@@ -190,3 +190,16 @@ exports.selectUsers = () => {
         return users.rows;
     });
 };
+
+exports.selectUsersByUsername = ({username}) => {
+    return db.query(`
+        SELECT * FROM users
+        WHERE username = $1`, [username])
+    .then((user)=>{
+        if (user.rows.length === 0){
+            return Promise.reject({msg: 'Not Found'})
+        }
+        return user.rows[0];
+    });
+};
+
