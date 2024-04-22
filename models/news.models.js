@@ -31,6 +31,9 @@ exports.selectArticles = (reqQuery) => {
         return Promise.reject({msg: 'Not Found'})
     }
 
+    const order = reqQuery.order || "desc";
+    const sort_by = reqQuery.sort_by || "created_at";
+
     let articleStr1 =`
     SELECT
     articles.author,
@@ -46,14 +49,22 @@ exports.selectArticles = (reqQuery) => {
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id`;
 
+    if (!['asc', 'desc'].includes(order)) {
+        return Promise.reject({ status: 404, msg: 'Invalid order query' });
+    }
+
+    if (!['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'article_img_url', 'comment_count'].includes(sort_by)) {
+        return Promise.reject({ status: 404, msg: 'Invalid sort query' });
+    }
+
     let articleStr3 = `
     GROUP BY articles.article_id
-    ORDER BY created_at DESC`;
+    ORDER BY ${sort_by} ${order}`;
     
     const fullStr = () => articleStr1 + articleStr2 + articleStr3;
     let promiseFunction = db.query(fullStr());
     let queryExists = false;
-    
+
     if (reqQuery.topic){
         promiseFunction = checkTopicExists(reqQuery)
         .then((data)=>{
@@ -77,7 +88,7 @@ exports.selectArticles = (reqQuery) => {
     })
 }
 
-exports.selectArticleById = (param) => {
+exports.selectArticleById = ({article_id}) => {
     return db.query(`
     SELECT articles.*, 
     COUNT(comment_id) AS comment_count 
@@ -85,7 +96,7 @@ exports.selectArticleById = (param) => {
     LEFT JOIN comments ON comments.article_id = articles.article_id
     WHERE articles.article_id = $1
     GROUP BY articles.article_id;
-    `,[param.article_id])
+    `,[article_id])
     .then((articles)=>{
         if (articles.rows.length === 0) {
             return Promise.reject({msg: 'Not Found'});

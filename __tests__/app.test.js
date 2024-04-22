@@ -454,3 +454,123 @@ describe("GET /api/articles (topic query)", () => {
     });
   });
 });
+
+describe('GET /api/articles (sorting queries)', () => { 
+  test('GET 200 - should return array of articles objects sorted by created_at and desc order', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=created_at")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles).toBeSorted({ 
+        key: "created_at",
+        descending: true
+      })
+    });
+   })
+   test('GET 200 - should return array of articles objects sorted by created_at and asc order', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=created_at&order=asc")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles).toBeSorted({ 
+        key: "created_at",
+      })
+    });
+   })
+
+   test('GET 200 - should return array of articles objects sorted by article_id and desc order', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=article_id&order=desc")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles).toBeSorted({ 
+        key: "article_id",
+        descending: true
+      })
+    });
+   })
+   test('GET 200 - should return array of articles objects sorted by created_at and asc order', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=created_at&order=asc")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles).toBeSorted({ 
+        key: "created_at",
+      })
+    });
+   })
+
+   test('GET 200 - should return array of articles objects sorted by comment_count and asc order', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=comment_count&order=asc")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles).toBeSortedBy('comment_count', {
+        coerce: true,
+      })
+    });
+   })
+   test('GET 200 - should return array of articles objects sorted by comment_count and desc order', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=comment_count&order=desc")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles).toBeSortedBy('comment_count', {
+        descending: true,
+        coerce: true,
+      })
+    });
+   })
+
+   test('GET 200 - should return array of articles objects sorted by author and asc order', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=author&order=asc")
+    .expect(200)
+    .then((result) => {
+      expect(Array.isArray(result.body.articles)).toBe(true);
+      expect(result.body.articles).toBeSorted({ 
+        key: "author",
+      })
+    });
+   })
+
+   test('GET 400 - should return error due "sort_by=test" not existing yet', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=test")
+    .expect(404)
+    .then((result) => {
+      expect(result.body.msg).toBe('Invalid sort query');
+    });
+   })
+   test('GET 404 - should return error due "sorted_bye" not existing yet', () => { 
+    return request(app)
+    .get("/api/articles?sorted_bye=created_at")
+    .expect(404)
+    .then((result) => {
+      expect(result.body.msg).toBe('Not Found');
+    });
+   })
+   test('GET 400 - should return error due "sort_by=test" not existing yet', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=test&order=test")
+    .expect(404)
+    .then((result) => {
+      expect(result.body.msg).toBe('Invalid order query');
+    });
+   })
+   test('GET 400 - should return error due "sort_by=test" not existing yet', () => { 
+    return request(app)
+    .get("/api/articles?sort_by=test&ordered=desc")
+    .expect(404)
+    .then((result) => {
+      expect(result.body.msg).toBe('Not Found');
+    });
+   })
+
+ })
