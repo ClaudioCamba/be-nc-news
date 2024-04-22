@@ -7,7 +7,7 @@
   "GET /api/topics": {
     "description": "serves an array of all topics",
     "queries": [],
-    "exampleResponse": {
+    "result": {
       "body": {
         "topics": [{ "slug": "football", "description": "Footie!" }]
       }
@@ -16,7 +16,7 @@
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
-    "exampleResponse": {
+    "result": {
       "body":{
         "articles": [{
             "title": "Seafood substitutions are increasing",
@@ -33,7 +33,7 @@
   "GET /api/articles?topic=": {
     "description": "serves an array of all articles that match the topic query",
     "queries": ["topic"],
-    "exampleResponse": {
+    "result": {
       "body":{
         "articles": [{
             "title": "Seafood substitutions are increasing",
@@ -47,9 +47,34 @@
       }
     }
   },
+  "GET /api/articles?sort_by=[column_name]&order=[asc/desc]": {
+    "description": "serves an array of all articles sorted by column name and ordered desc / asc",
+    "queries": ["sort_by", "order"],
+    "result": {
+      "body":{
+        "articles": [{
+            "title": "Seafood substitutions are increasing",
+            "topic": "cooking",
+            "author": "weegembump",
+            "body": "Text from the article..",
+            "created_at": "2018-05-30T15:59:13.341Z",
+            "votes": 0,
+            "comment_count": 6
+        },{
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0,
+          "comment_count": 6
+        }]
+      }
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves an object of an article",
-    "exampleResponse": {
+    "result": {
       "body": {
         "article": {
           "article_id": 4,
@@ -67,7 +92,7 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of all comments with the requested article_id ordered by most recent first",
-    "exampleResponse": {
+    "result": {
       "body": {
         "comments": [{
           "comment_id": 4,
@@ -83,7 +108,7 @@
   },
   "POST /api/articles/:article_id/comments": {
     "description": "adds comment to comment database and serves the added comment",
-    "exampleResponse": {
+    "result": {
       "body": {
         "comment": {
           "comment_id": 4,
@@ -99,7 +124,7 @@
   },
   "PATCH /api/articles/:article_id": {
     "description": "Updates article votes and returns the updated article object",
-    "exampleResponse": {
+    "result": {
       "body":{
         "article": {
           "article_id": 4,
@@ -116,7 +141,7 @@
   },
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes comment by comment id and returns status 204 with 'No content'",
-    "exampleResponse": {
+    "result": {
       "res": {
         "res": "No Content"
       }
