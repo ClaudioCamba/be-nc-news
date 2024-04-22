@@ -4,6 +4,35 @@
       "endpoints": "serves up a json representation of all the available endpoints of the api"
     }
   },
+  "GET /api/users": {
+    "description": "serves an array containing user objects",
+    "result": {
+      "body":{
+        "users": [{
+          "username": "zonamorte",
+          "name": "claudio",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        },{
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }]
+      }
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves user object with matching username searched containing username, avatar_url and name properties",
+    "parameter": "username",
+    "result": {
+      "body":{
+        "user": {
+          "username": "zonamorte",
+          "name": "claudio",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      }
+    }
+  },
   "GET /api/topics": {
     "description": "serves an array of all topics",
     "queries": [],
