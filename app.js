@@ -1,7 +1,13 @@
 const cors = require('cors');
 const express = require("express");
+const apiRouter = require('./routes/api.router.js');
+const topicsRouter = require('./routes/topics.router.js');
+const usersRouter = require('./routes/users.router.js');
+const articlesRouter = require('./routes/articles.router.js');
+const commentsRouter = require('./routes/comments.router.js');
 
 const app = express();
+
 const {
     handleEndpointError,
     handleCustomErrors,
@@ -9,35 +15,14 @@ const {
     handleServerErrors,
   } = require('./errors.js');
 
-const { 
-    getUsers,
-    getTopics, 
-    getEndpoints, 
-    getArticles, 
-    getArticleById,
-    getCommentsById,
-    postCommentsById,
-    patchArticleById,
-    deleteCommentsById
-} = require("./controllers/news.controllers.js")
-
 app.use(cors());
 app.use(express.json());
 
-app.get('/api', getEndpoints)
-
-app.get('/api/topics', getTopics)
-app.get('/api/users', getUsers)
-app.get('/api/articles', getArticles)
-
-app.get('/api/articles/:article_id', getArticleById)
-app.get('/api/articles/:article_id/comments', getCommentsById)
-
-app.post('/api/articles/:article_id/comments', postCommentsById)
-
-app.patch('/api/articles/:article_id', patchArticleById)
-
-app.delete('/api/comments/:comment_id', deleteCommentsById)
+app.use('/api', apiRouter);
+app.use('/api/topics', topicsRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/articles', articlesRouter);
+app.use('/api/comments', commentsRouter);
 
 app.all('*',handleEndpointError);
 app.use(handleCustomErrors);
