@@ -7,6 +7,7 @@ const {
     selectArticleById,
     selectCommentsById,
     insertCommentsById,
+    insertArticles,
     updateArticleById,
     removeCommentById,
     updateCommentById,
@@ -26,6 +27,13 @@ exports.getTopics = (req, res, next) => {
         res.status(200).send({ topics });
     }).catch(next);
 };
+
+exports.postArticle = (req, res, next) => {
+    insertArticles(req.body)
+    .then((article)=> {
+        res.status(201).send({ article });
+    }).catch(next);
+}
 
 exports.getArticles = (req, res, next) => {
     selectArticles(req.query)

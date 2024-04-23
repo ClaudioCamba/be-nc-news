@@ -6,7 +6,8 @@ const {
     createRef,
     formatComments,
     checkTopicExists,
-    checkValidQueries
+    checkValidQueries,
+    convertTimestampToDate,
 } = require('../db/seeds/utils')
 
 exports.selectEndpoints = () => {
@@ -85,6 +86,35 @@ exports.selectArticles = (reqQuery) => {
         } else if (articles.rows.length === 0){
             return Promise.reject({ msg: 'Not Found' });
         } else return articles.rows;
+    })
+}
+exports.insertArticles = (articleData) => {
+    articleData.created_at = Date.now();
+    articleData.votes = 0;
+
+    const formattedArticleData = [articleData].map(convertTimestampToDate);
+    const insertArticlesQueryStr = format(
+      `INSERT INTO articles 
+      (title, topic, author, body, created_at, votes, article_img_url) 
+      VALUES %L RETURNING *;`,
+      formattedArticleData.map(({ title,topic,author,body,created_at,votes,article_img_url
+        }) => [title, topic, author, body, created_at, votes, article_img_url])
+    );
+
+    return db.query(insertArticlesQueryStr)
+    .then((article)=>{
+
+        return db.query(`
+            SELECT articles.*, 
+            COUNT(comment_id) AS comment_count 
+            FROM articles
+            LEFT JOIN comments ON comments.article_id = articles.article_id
+            WHERE articles.article_id = $1
+            GROUP BY articles.article_id;
+            `,[article.rows[0].article_id])
+
+    }).then((article)=>{
+        return article.rows[0];
     })
 }
 

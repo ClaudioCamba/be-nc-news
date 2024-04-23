@@ -676,3 +676,27 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   })
 });
+
+describe('POST /api/articles', () => { 
+  const article = {
+    title: "First article posted by zonamorte",
+    topic: "paper",
+    author: "zonamorte",
+    body: "This is my first article post by zonamorte",
+    article_img_url:
+      "https://claudiocamba.com/assets/projects/dishGo/dishGoBanner.png",
+  }
+
+  test('POST 201 - Should return article once it has been added', () => { 
+    return request(app)
+    .post('/api/articles')
+    .send(article)
+    .expect(201)
+    .then((result)=>{
+      expect(result.body.article).toHaveProperty('article_id');
+      expect(result.body.article).toHaveProperty('created_at');
+      expect(result.body.article).toHaveProperty('votes');
+      expect(result.body.article).toHaveProperty('comment_count');
+    });
+   })
+ })
