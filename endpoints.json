@@ -151,6 +151,30 @@
       }
     }
   },
+  "POST /api/articles": {
+    "description": "returns an object of the article posted",
+    "body": {
+      "title": "Seafood substitutions are increasing",
+      "topic": "cooking",
+      "author": "weegembump",
+      "body": "Text from the article..",
+      "article_img_url": "https://claudiocamba.com/assets/projects/dishGo/dishGoBanner.png"
+    },
+    "result": {
+      "body":{
+        "article": {
+            "title": "Seafood substitutions are increasing",
+            "topic": "cooking",
+            "author": "weegembump",
+            "body": "Text from the article..",
+            "created_at": "2018-05-30T15:59:13.341Z",
+            "votes": 0,
+            "comment_count": 0,
+            "article_img_url": "https://claudiocamba.com/assets/projects/dishGo/dishGoBanner.png"
+        }
+      }
+    }
+  },
   "PATCH /api/articles/:article_id": {
     "description": "Updates article votes and returns the updated article object",
     "body": { "inc_votes" : -15 },
@@ -169,14 +193,6 @@
       }
     }
   },
-  "DELETE /api/comments/:comment_id": {
-    "description": "Deletes comment by comment id and returns status 204 with 'No content'",
-    "result": {
-      "res": {
-        "res": "No Content"
-      }
-    }
-  },
   "PATCH /api/comments/:comment_id": {
     "description": "Updates comment votes by comment id and returns status 204 with 'No content'",
     "body": { "inc_votes" : -15 },
@@ -190,6 +206,14 @@
           "votes": -100,
           "created_at": "2020-02-23T12:01:00.000Z"
         }
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes comment by comment id and returns status 204 with 'No content'",
+    "result": {
+      "res": {
+        "res": "No Content"
       }
     }
   }

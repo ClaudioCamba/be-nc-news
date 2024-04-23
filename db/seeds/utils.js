@@ -61,3 +61,12 @@ exports.checkValidQueries = (reqQuery) => {
 
   return true
 };
+
+exports.checkUserExists = (author) => {
+  return db.query(`SELECT * FROM users
+  WHERE users.username = $1;`
+  ,[author]).then((user)=>{
+    if (user.rows.length === 0) return Promise.reject({msg: 'Not Found'});
+    return user;
+  })
+}
