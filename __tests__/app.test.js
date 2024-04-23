@@ -616,7 +616,7 @@ describe('GET /api/articles (sorting queries)', () => {
    })
 })
 
-describe.only("PATCH /api/comments/:comment_id", () => {
+describe("PATCH /api/comments/:comment_id", () => {
   test("PATCH 200 - should return comment with increased votes from 16 to 17", () => {
     const votes = { inc_votes : 1 }
 
