@@ -183,6 +183,21 @@ exports.removeCommentById = (reqParams) => {
     });
 }
 
+exports.updateCommentById = ({ inc_votes }, { comment_id }) => {
+    return db.query(`
+    UPDATE comments
+    SET
+      votes = votes + $1
+    WHERE comments.comment_id = $2
+    RETURNING *;`, [inc_votes, comment_id])
+    .then((response)=>{
+        if (response.rows.length === 0){
+            return Promise.reject({msg: 'Not Found'})
+        }
+        return response.rows[0];
+    });
+}
+
 exports.selectUsers = () => {
     return db.query(`
         SELECT * FROM users;
