@@ -183,7 +183,6 @@ describe("POST /api/articles/:article_id/comments", () => {
     const comment = {
       username: 'zonamorte',
       body: "This is a comment",
-      created_at: 1604113380000,
       test: "test additional properties"
     }
 
@@ -213,7 +212,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(result.body.msg).toBe('Bad Request');
       });
   });
-  test("POST 404 - should return with 'Not Found' due to article not existing", () => {
+  test("POST 400 - should return with 'Not Found' due to article not existing", () => {
     const comment = {
       username: 'zonamorte',
       body: "This is a comment"
@@ -581,7 +580,6 @@ describe('GET /api/articles (sorting queries)', () => {
     .get("/api/users/zonamorte")
     .expect(200)
     .then((result)=>{
-      console.log(result.body.user)
       expect(result.body.user.username).toBe("zonamorte")
       expect(result.body.user.name).toBe("claudio")
       expect(result.body.user).toHaveProperty('avatar_url');
@@ -592,7 +590,6 @@ describe('GET /api/articles (sorting queries)', () => {
     .get("/api/users/butter_bridge")
     .expect(200)
     .then((result)=>{
-      console.log(result.body.user)
       expect(result.body.user.username).toBe("butter_bridge")
       expect(result.body.user.name).toBe("jonny")
       expect(result.body.user).toHaveProperty('avatar_url');
@@ -676,3 +673,91 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   })
 });
+
+describe('POST /api/articles', () => { 
+  const article = {
+    title: "First article posted by zonamorte",
+    topic: "paper",
+    author: "zonamorte",
+    body: "This is my first article post by zonamorte",
+    article_img_url:
+      "https://claudiocamba.com/assets/projects/dishGo/dishGoBanner.png",
+  }
+  const article2 = {
+    topic: "paper",
+    author: "zonamorte",
+    body: "This is my first article post by zonamorte",
+    article_img_url:
+      "https://claudiocamba.com/assets/projects/dishGo/dishGoBanner.png",
+  }
+  const article3 = {
+    title: "First article posted by zonamorte",
+    topic: "paper",
+    author: "Test",
+    body: "This is my first article post by zonamorte",
+    article_img_url:
+      "https://claudiocamba.com/assets/projects/dishGo/dishGoBanner.png",
+  }
+  const article4 = {
+    title: 1234,
+    topic: "paper",
+    author: "Test",
+    body: "This is my first article post by zonamorte",
+    article_img_url:
+      "https://claudiocamba.com/assets/projects/dishGo/dishGoBanner.png",
+  }
+
+  test('POST 201 - Should return article once it has been added', () => { 
+    return request(app)
+    .post('/api/articles')
+    .send(article)
+    .expect(201)
+    .then((result)=>{
+      expect(result.body.article).toHaveProperty('title','First article posted by zonamorte');
+      expect(result.body.article).toHaveProperty('topic','paper');
+      expect(result.body.article).toHaveProperty('author','zonamorte');
+      expect(result.body.article).toHaveProperty('body','This is my first article post by zonamorte');
+      expect(result.body.article).toHaveProperty('article_img_url','https://claudiocamba.com/assets/projects/dishGo/dishGoBanner.png');
+      expect(result.body.article).toHaveProperty('article_id');
+      expect(result.body.article).toHaveProperty('created_at');
+      expect(result.body.article).toHaveProperty('votes');
+      expect(result.body.article).toHaveProperty('comment_count');
+    });
+   })
+   test('POST 400 - Should return "Bad Request" due to missing title property', () => { 
+    return request(app)
+    .post('/api/articles')
+    .send(article2)
+    .expect(400)
+    .then((result)=>{
+      expect(result.body.msg).toBe('Bad Request');
+    });
+   })
+   test('POST 404 - Should return "Not Found" due to enpoint not existing yet', () => { 
+    return request(app)
+    .post('/api/article')
+    .send(article)
+    .expect(404)
+    .then((result)=>{
+      expect(result.body.msg).toBe('Not Found');
+    });
+   })
+   test('POST 404 - Should return "Not Found" due to author not existing', () => { 
+    return request(app)
+    .post('/api/articles')
+    .send(article3)
+    .expect(400)
+    .then((result)=>{
+      expect(result.body.msg).toBe('Bad Request');
+    });
+   })
+   test('POST 400 - Should return "Bad Request" due to author not existing', () => { 
+    return request(app)
+    .post('/api/articles')
+    .send(article4)
+    .expect(400)
+    .then((result)=>{
+      expect(result.body.msg).toBe('Bad Request');
+    });
+   })
+ })
