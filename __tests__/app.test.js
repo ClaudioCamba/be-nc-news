@@ -761,3 +761,66 @@ describe('POST /api/articles', () => {
     });
    })
  })
+
+ describe('GET /api/articles (pagination)', () => { 
+    test('GET 200 limit and p queries - Should return 2 articles from page 2, total 12 minus 10 = 2', () => { 
+      return request(app)
+      .get('/api/articles?topic=mitch&limit=10&p=2')
+      .expect(200)
+      .then((result)=> {
+        expect(result.body.articles.length).toBe(2)
+        result.body.articles.forEach((article)=>{
+          expect(article).toHaveProperty('total_count','12')
+        })
+      });
+     })
+     test('GET 200 limit and p queries - Should return 10 articles from page 1, total 12 minus 2 = 10', () => { 
+      return request(app)
+      .get('/api/articles?topic=mitch&limit&p')
+      .expect(200)
+      .then((result)=> {
+        expect(result.body.articles.length).toBe(10)
+        result.body.articles.forEach((article)=>{
+          expect(article).toHaveProperty('total_count','12')
+        })
+      });
+     })
+     test('GET 200 limit and p queries - Should return 3 articles from page 2, total 13 minus 10 = 3', () => { 
+      return request(app)
+      .get('/api/articles?limit=10&p=2')
+      .expect(200)
+      .then((result)=> {
+        expect(result.body.articles.length).toBe(3)
+        result.body.articles.forEach((article)=>{
+          expect(article).toHaveProperty('total_count','13')
+        })
+      });
+     })
+     test('GET 200 limit and p queries - Should return 10 articles from page 1, total 13 minus 3 = 10', () => { 
+      return request(app)
+      .get('/api/articles?limit=10&p=1')
+      .expect(200)
+      .then((result)=> {
+        expect(result.body.articles.length).toBe(10)
+        result.body.articles.forEach((article)=>{
+          expect(article).toHaveProperty('total_count','13')
+        })
+      });
+     })
+     test('GET 400 - Should return "Bad request due to negative number input (limit=-1)" ', () => { 
+      return request(app)
+      .get('/api/articles?topic=mitch&limit=-1&p=-1')
+      .expect(400)
+      .then((result)=> {
+        expect(result.body.msg).toBe("Bad Request")
+      });
+     })
+     test('GET 400 - Should return "Bad request due to NaN values for limit and page', () => { 
+      return request(app)
+      .get('/api/articles?topic=mitch&limit=test&p=test')
+      .expect(400)
+      .then((result)=> {
+        expect(result.body.msg).toBe("Bad Request")
+      });
+     })
+})

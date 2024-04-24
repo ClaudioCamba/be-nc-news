@@ -48,7 +48,7 @@ exports.checkTopicExists = (reqTopic) => {
 }
 
 exports.checkValidQueries = (reqQuery) => {
-    const qualifiedQuery = ['topic','sort_by','order'];
+    const qualifiedQuery = ['topic','sort_by','order','p','limit'];
 
   if (Object.keys(reqQuery).length > 0){
     const queryArr = Object.keys(reqQuery);

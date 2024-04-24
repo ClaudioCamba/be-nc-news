@@ -5,6 +5,7 @@ exports.handleEndpointError = (req,res)=> {
 };
 
 exports.handlePsqlErrors = (err, req, res, next) => {
+      
 
     if (err.code === '42883') {
         res.status(400).send({msg: 'Bad Request'});
@@ -18,14 +19,20 @@ exports.handlePsqlErrors = (err, req, res, next) => {
         res.status(400).send({msg: 'Bad Request'});
     } else if (err.code === '23503') {
         res.status(400).send({msg: 'Bad Request'});
+    } else if (err.code === '2201W') {
+        console.log(err)
+        res.status(400).send({msg: 'Bad Request'});
     } else  next(err);
 };
+
 
 exports.handleCustomErrors = (err, req, res, next) => {
     if (err.code === 'MODULE_NOT_FOUND'){
         res.status(404).send({msg: 'Not Found'});
     } else if (err.msg === 'Not Found') {
         res.status(404).send({msg: err.msg});
+    } else if (err.msg === 'Bad Request') {
+        res.status(400).send({msg: err.msg});
     } else if (err.status && err.msg) {
         res.status(err.status).send({ msg: err.msg });
     } else next(err);

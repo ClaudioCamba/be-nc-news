@@ -29,10 +29,8 @@ exports.selectTopics = () => {
 
 exports.selectArticles = (reqQuery) => {
 
-    if(!checkValidQueries(reqQuery)){
-        return Promise.reject({ msg: 'Not Found' })
-    }
-
+    if(!checkValidQueries(reqQuery)) return Promise.reject({ msg: 'Not Found' })
+    
     const order = reqQuery.order || "desc";
     const sort_by = reqQuery.sort_by || "created_at";
 
@@ -44,12 +42,13 @@ exports.selectArticles = (reqQuery) => {
     articles.topic,
     articles.created_at,
     articles.votes,
-    articles.article_img_url,`;
+    articles.article_img_url,
+    `;
 
     let articleStr2 = `
     COUNT(comment_id) AS comment_count
     FROM articles
-    LEFT JOIN comments ON comments.article_id = articles.article_id`;
+    LEFT JOIN comments ON comments.article_id = articles.article_id`
 
     if (!['asc', 'desc'].includes(order)) {
         return Promise.reject({ status: 404, msg: 'Invalid order query' });
@@ -61,26 +60,47 @@ exports.selectArticles = (reqQuery) => {
 
     let articleStr3 = `
     GROUP BY articles.article_id
-    ORDER BY ${sort_by} ${order}`;
+    ORDER BY ${sort_by} ${order}
+    `;
+
+    if (reqQuery.limit === '' || reqQuery.limit && reqQuery.p === '' || reqQuery.p){
+        if (isNaN(reqQuery.limit)) return Promise.reject({ msg: 'Bad Request' })
+        if (isNaN(reqQuery.p)) return Promise.reject({ msg: 'Bad Request' })
+
+        const limit = reqQuery.limit === '' ? 10 : parseInt(reqQuery.limit) || 10;
+        const pageNumber = reqQuery.p === '' ? 1 : parseInt(reqQuery.p) || 1;
+
+        if (limit < 1) return Promise.reject({ msg: 'Bad Request' })
+        if (pageNumber < 1) return Promise.reject({ msg: 'Bad Request' })
+        
+        const offset = (limit * pageNumber) - limit;
+        
+        articleStr1 += `COUNT(*) OVER() AS total_count,
+        `
+        articleStr3 += `LIMIT ${limit} OFFSET ${offset};
+        `
+    }
     
     const fullStr = () => articleStr1 + articleStr2 + articleStr3;
     let promiseFunction = db.query(fullStr());
     let queryExists = false;
 
     if (reqQuery.topic){
-        promiseFunction = checkTopicExists(reqQuery)
+        promiseFunction = 
+        checkTopicExists(reqQuery)
         .then((data)=>{
             if(data) {
                 articleStr1 += ` articles.*,`;
-                articleStr2 += ` WHERE topic = $1`;
+                articleStr2 += ` WHERE articles.topic = $1`;
                 queryExists = true;
             }
-            
+
             return db.query(fullStr(), [reqQuery.topic]);
         });
     }
  
     return promiseFunction.then((articles)=>{
+        // console.log(articles)
 
         if (queryExists) {
             return articles.rows;
