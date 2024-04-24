@@ -289,4 +289,14 @@ exports.selectUsersByUsername = ({username}) => {
         return user.rows[0];
     });
 };
+exports.insertTopics = ({slug, description}) => {
 
+    const formatedStr = format(`
+    INSERT INTO topics (slug, description) VALUES %L 
+    RETURNING *;`,[[ slug, description ]])
+
+    return db.query(formatedStr)
+    .then((result)=>{
+        return result.rows[0];
+    })
+}

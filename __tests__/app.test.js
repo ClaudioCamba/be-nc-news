@@ -914,3 +914,47 @@ describe('GET /api/articles/:article_id/comments (pagination)', () => {
     });
    })
 });
+
+describe('POST /api/topics', () => { 
+    const topic = {
+      "slug": "topic name here",
+      "description": "description here"
+    }
+    const topic1 = {
+      "slug": "topic name here"
+    }
+    const topic2 = {
+      "slug": 123,
+      "description": "DROP TABLE topics"
+    }
+
+    test('POST 201 - Should return topic object with id, slug and description properties', () => { 
+      return request(app)
+      .post('/api/topics')
+      .send(topic)
+      .expect(201)
+      .then((result)=>{
+        expect(result.body.topic).toHaveProperty('slug','topic name here')
+        expect(result.body.topic).toHaveProperty('description', 'description here')
+      })
+    })
+    test('POST 400 - Should return Error because description property is missing', () => { 
+      return request(app)
+      .post('/api/topics')
+      .send(topic1)
+      .expect(400)
+      .then((result)=>{
+        expect(result.body.msg).toBe('Bad Request')
+      })
+    })
+    test('POST 400 - Should return Error because description property is missing', () => { 
+      return request(app)
+      .post('/api/topics')
+      .send(topic2)
+      .expect(201)
+      .then((result)=>{
+        expect(result.body.topic).toHaveProperty('slug','123')
+        expect(result.body.topic).toHaveProperty('description', 'DROP TABLE topics')
+      })
+    })
+ });
