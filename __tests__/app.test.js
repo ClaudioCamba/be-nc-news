@@ -823,4 +823,42 @@ describe('POST /api/articles', () => {
         expect(result.body.msg).toBe("Bad Request")
       });
      })
+     test('GET 200 limit and p queries - Should return 1 article because there is only 1 cat article', () => { 
+      return request(app)
+      .get('/api/articles?topic=cats&limit=10&p=1')
+      .expect(200)
+      .then((result)=> {
+        expect(result.body.articles.length).toBe(1)
+        result.body.articles.forEach((article)=>{
+          expect(article).toHaveProperty('total_count','1')
+        })
+      });
+     })
+     test('GET 200 limit and p queries - Should return 0 articles because not enough to be on 2 pages', () => { 
+      return request(app)
+      .get('/api/articles?topic=cats&limit=10&p=2')
+      .expect(200)
+      .then((result)=> {
+        expect(result.body.articles.length).toBe(0)
+      });
+     })
+     test('GET 200 limit and p queries - Should return 0 articles because not enough to be on 2 pages', () => { 
+      return request(app)
+      .get('/api/articles?topic=paper&limit=10&p=1')
+      .expect(200)
+      .then((result)=> {
+        expect(result.body.articles.length).toBe(0)
+      });
+     })
+     test('GET 200 limit and p queries - Should return 2 articles from page 2, total 12 minus 10 = 2', () => { 
+      return request(app)
+      .get('/api/articles?topic=mitch&limit=5&p=2')
+      .expect(200)
+      .then((result)=> {
+        expect(result.body.articles.length).toBe(5)
+        result.body.articles.forEach((article)=>{
+          expect(article).toHaveProperty('total_count','12')
+        })
+      });
+     })
 })
