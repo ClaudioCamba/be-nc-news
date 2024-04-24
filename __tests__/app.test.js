@@ -862,3 +862,55 @@ describe('POST /api/articles', () => {
       });
      })
 })
+
+describe('GET /api/articles/:article_id/comments (pagination)', () => { 
+  test('GET 200 - Should return array with 10 comment object due to limit of 10 per page', () => { 
+    return request(app)
+    .get('/api/articles/1/comments?limit=10&p=1')
+    .expect(200)
+    .then((result)=> {
+      expect(result.body.comments.length).toBe(10)
+      result.body.comments.forEach((comment)=>{
+        expect(comment).toHaveProperty('total_count','11')
+      })
+    });
+   })
+  test('GET 200 - Should return array with 10 comment object due to limit of 10 per page', () => { 
+    return request(app)
+    .get('/api/articles/1/comments?limit=')
+    .expect(200)
+    .then((result)=> {
+      expect(result.body.comments.length).toBe(10)
+      result.body.comments.forEach((comment)=>{
+        expect(comment).toHaveProperty('total_count','11')
+      })
+    });
+   })
+   test('GET 400 - Should return "Bad Request" due to negative values (-1)', () => { 
+    return request(app)
+    .get('/api/articles/1/comments?limit=-1&p=-1')
+    .expect(400)
+    .then((result)=> {
+      expect(result.body.msg).toBe("Bad Request")
+    });
+   })
+   test('GET 400 - Should return "Bad Request" due to incorrect values (test)', () => { 
+    return request(app)
+    .get('/api/articles/1/comments?limit=test&p=test')
+    .expect(400)
+    .then((result)=> {
+      expect(result.body.msg).toBe("Bad Request")
+    });
+   })
+   test('GET 200 - Should return array with 2 comment objects due to limit of 3 per page and we are getting page 4', () => { 
+    return request(app)
+    .get('/api/articles/1/comments?limit=3&p=4')
+    .expect(200)
+    .then((result)=> {
+      expect(result.body.comments.length).toBe(2)
+      result.body.comments.forEach((comment)=>{
+        expect(comment).toHaveProperty('total_count','11')
+      })
+    });
+   })
+});

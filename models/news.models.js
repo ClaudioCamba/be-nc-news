@@ -2,7 +2,6 @@ const db = require("../db/connection");
 const format = require('pg-format');
 
 const {
-    checkArticleExists,
     createRef,
     checkUserExists,
     formatComments,
@@ -62,22 +61,22 @@ exports.selectArticles = (reqQuery) => {
     GROUP BY articles.article_id
     ORDER BY ${sort_by} ${order}
     `;
-
-    if (reqQuery.limit === '' || reqQuery.limit && reqQuery.p === '' || reqQuery.p){
+   
+    if (reqQuery.limit === '' || reqQuery.limit){
         if (isNaN(reqQuery.limit)) return Promise.reject({ msg: 'Bad Request' })
         if (isNaN(reqQuery.p)) return Promise.reject({ msg: 'Bad Request' })
 
         const limit = reqQuery.limit === '' ? 10 : parseInt(reqQuery.limit) || 10;
-        const pageNumber = reqQuery.p === '' ? 1 : parseInt(reqQuery.p) || 1;
+        const pageNumber = reqQuery.p === '' ? 0 : parseInt(reqQuery.p) || 0;
 
-        if (limit < 1) return Promise.reject({ msg: 'Bad Request' })
-        if (pageNumber < 1) return Promise.reject({ msg: 'Bad Request' })
+        if (limit < 0) return Promise.reject({ msg: 'Bad Request' })
+        if (pageNumber < 0) return Promise.reject({ msg: 'Bad Request' })
         
         const offset = (limit * pageNumber) - limit;
         
         articleStr1 += `COUNT(*) OVER() AS total_count,
         `
-        articleStr3 += `LIMIT ${limit} OFFSET ${offset};
+        articleStr3 += `LIMIT ${limit} OFFSET ${offset >= 0? offset : 0};
         `
     }
     
@@ -94,13 +93,11 @@ exports.selectArticles = (reqQuery) => {
                 articleStr2 += ` WHERE articles.topic = $1`;
                 queryExists = true;
             }
-
             return db.query(fullStr(), [reqQuery.topic]);
         });
     }
  
     return promiseFunction.then((articles)=>{
-        // console.log(articles)
 
         if (queryExists) {
             return articles.rows;
@@ -156,22 +153,38 @@ exports.selectArticleById = ({article_id}) => {
     });
 }
 
-exports.selectCommentsById = (request) => {
-    const id = request.article_id;
-    const getComments = (articleId) => db.query(`
-    SELECT * FROM comments
+exports.selectCommentsById = ({article_id},{limit = null, p = null}) => {
+
+    let str1 = `
+    SELECT *,
+    COUNT(*) OVER() AS total_count
+    FROM comments
     WHERE comments.article_id = $1
-    ORDER BY created_at DESC`, [articleId]);
-
-    const queries = [getComments(id)];
-    if (id){
-        const articleExistenceQuery = checkArticleExists(id);
-        queries.push(articleExistenceQuery);
+    ORDER BY created_at DESC
+    `
+    
+    if (limit === '' || limit){
+        if (isNaN(limit)) return Promise.reject({ msg: 'Bad Request' })
+        if (isNaN(p)) return Promise.reject({ msg: 'Bad Request' })
+        
+        const limits = limit === '' ? 10 : parseInt(limit) || 10;
+        const pageNumbers = p === '' ? 0 : parseInt(p) || 0;
+        
+        if (limits < 0) return Promise.reject({ msg: 'Bad Request' })
+        if (pageNumbers < 0) return Promise.reject({ msg: 'Bad Request' })
+      
+        const offset = (limits * pageNumbers) - limits;
+        str1 += `LIMIT ${limits} OFFSET ${offset >= 0? offset : 0};`
     }
-
-    return Promise.all(queries)
+    
+    return exports.selectArticleById({article_id})
+    .then((article = null)=>{
+        if (!article) return Promise.reject({msg: 'Not Found'});
+        
+        return db.query(str1,[article_id])
+    })
     .then((comments)=>{
-       return comments[0].rows;
+       return comments.rows;
     });
 }
 

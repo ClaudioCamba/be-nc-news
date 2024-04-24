@@ -50,7 +50,7 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getCommentsById = (req, res, next) => {
-    selectCommentsById(req.params)
+    selectCommentsById(req.params, req.query)
     .then((comments)=> {
         res.status(200).send({ comments });
     }).catch(next);

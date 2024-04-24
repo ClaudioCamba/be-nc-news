@@ -23,16 +23,16 @@ exports.formatComments = (comments, idLookup) => {
   });
 };
 
-exports.checkArticleExists = (id) =>{
-    return db.query(`
-    SELECT * FROM articles
-    WHERE articles.article_id = $1`,[id])
-    .then((article)=>{
-    if(article.rows.length === 0){
-      return Promise.reject({msg: 'Not Found'});
-    }
-  });
-}
+// exports.checkArticleExists = (id) =>{
+//     return db.query(`
+//     SELECT * FROM articles
+//     WHERE articles.article_id = $1`,[id])
+//     .then((article)=>{
+//     if(article.rows.length === 0){
+//       return Promise.reject({msg: 'Not Found'});
+//     }
+//   });
+// }
 
 exports.checkTopicExists = (reqTopic) => {
       return db.query(`
