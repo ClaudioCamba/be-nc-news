@@ -25,7 +25,6 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then((result) => {
-        console.log(result.body.topics)
         expect(Array.isArray(result.body.topics)).toBe(true);
         expect(result.body.topics.length).toBe(3);
         result.body.topics.forEach((topic)=>{
@@ -916,7 +915,7 @@ describe('GET /api/articles/:article_id/comments (pagination)', () => {
    })
 });
 
-describe.only('POST /api/topics', () => { 
+describe('POST /api/topics', () => { 
     const topic = {
       "slug": "topic name here",
       "description": "description here"
