@@ -279,7 +279,15 @@
     "description": "Deletes comment by comment id and returns status 204 with 'No content'",
     "result": {
       "res": {
-        "res": "No Content"
+        "statusMessage": "No Content"
+      }
+    }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "Deletes article by article_id and comments with the same article_id. Returns status 204 with 'No content'",
+    "result": {
+      "res": {
+        "statusMessage": "No Content"
       }
     }
   }

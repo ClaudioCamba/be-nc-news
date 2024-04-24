@@ -11,6 +11,7 @@ const {
     insertTopics,
     updateArticleById,
     removeCommentById,
+    removeArticleById,
     updateCommentById,
 } = require('../models/news.models')
 
@@ -77,6 +78,13 @@ exports.patchArticleById = (req, res, next) => {
         res.status(200).send({ article });
     }).catch(next);
 }
+
+exports.deleteArticleById = (req, res, next) => {
+    removeArticleById(req.params)
+    .then(()=> {
+        res.status(204).send();
+    }).catch(next);
+};
 
 exports.deleteCommentsById = (req, res, next) => {
     removeCommentById(req.params)

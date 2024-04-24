@@ -106,6 +106,7 @@ exports.selectArticles = (reqQuery) => {
         } else return articles.rows;
     })
 }
+
 exports.insertArticles = (articleData) => {
     articleData.created_at = Date.now();
     articleData.votes = 0;
@@ -255,6 +256,20 @@ exports.removeCommentById = (reqParams) => {
     });
 }
 
+exports.removeArticleById = ({article_id}) => {
+    return db.query(`
+    DELETE FROM comments WHERE article_id = $1
+    RETURNING *`, [article_id])
+    .then((comments)=> {
+    return db.query(`
+    DELETE FROM articles WHERE article_id = $1
+    RETURNING *`, [article_id])
+    }).then((articles)=>{
+        if (articles.rows.length === 0) return Promise.reject({msg: 'Not Found'})
+        return articles.rows;
+    });
+}
+
 exports.updateCommentById = ({ inc_votes }, { comment_id }) => {
     return db.query(`
     UPDATE comments
@@ -289,8 +304,8 @@ exports.selectUsersByUsername = ({username}) => {
         return user.rows[0];
     });
 };
-exports.insertTopics = ({slug, description}) => {
 
+exports.insertTopics = ({slug, description}) => {
     const formatedStr = format(`
     INSERT INTO topics (slug, description) VALUES %L 
     RETURNING *;`,[[ slug, description ]])
