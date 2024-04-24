@@ -958,3 +958,38 @@ describe('POST /api/topics', () => {
       })
     })
  });
+
+ describe('DELETE /api/articles/:article_id', () => { 
+  test('DELETE 204 - should respond with "No Content" once the article has been deleted', () => { 
+      return request(app)
+      .delete('/api/articles/1')
+      .expect(204)
+      .then((result) => {
+        expect(result.res.statusMessage).toBe('No Content');
+      });
+    })
+    test('DELETE 400 - should return Error because article with id of 100 doesn\'t exist', () => { 
+      return request(app)
+      .delete('/api/articles/100')
+      .expect(404)
+      .then((result) => {
+        expect(result.body.msg).toBe('Not Found');
+      });
+    })
+    test('DELETE 204 - should return Error because article format is incorrect', () => { 
+      return request(app)
+      .delete('/api/articles/X45')
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe('Bad Request');
+      });
+    })
+    test('DELETE 204 - should respond with "No Content" once the article has been deleted', () => { 
+      return request(app)
+      .delete('/api/articles/2')
+      .expect(204)
+      .then((result) => {
+        expect(result.res.statusMessage).toBe('No Content');
+      });
+    })
+ });
