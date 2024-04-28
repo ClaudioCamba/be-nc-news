@@ -6,11 +6,11 @@ The available endpoints and expected responses are documented within the 'endpoi
 
 Below are some examples of the currently live endpoints available.
 
-Endpoints: https://nc-news-qvgz.onrender.com/api
-Articles: https://nc-news-qvgz.onrender.com/api/articles
-Users: https://nc-news-qvgz.onrender.com/api/users
-Topics: https://nc-news-qvgz.onrender.com/api/topics
-Comments: https://nc-news-qvgz.onrender.com/api/articles/:article_id/comments
+- Endpoints: https://nc-news-qvgz.onrender.com/api
+- Articles: https://nc-news-qvgz.onrender.com/api/articles
+- Users: https://nc-news-qvgz.onrender.com/api/users
+- Topics: https://nc-news-qvgz.onrender.com/api/topics
+- Comments: https://nc-news-qvgz.onrender.com/api/articles/:article_id/comments
 
 # Project Summary
 
