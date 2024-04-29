@@ -1,25 +1,29 @@
-# Northcoders News API
+# New City News API
 
-# Live Endpoints
-
-The available endpoints and expected responses are documented within the 'endpoints.json' file at the root of this repository.
-
-Below are some examples of the currently live endpoints available.
-
-- Endpoints: https://nc-news-qvgz.onrender.com/api
-- Articles: https://nc-news-qvgz.onrender.com/api/articles
-- Users: https://nc-news-qvgz.onrender.com/api/users
-- Topics: https://nc-news-qvgz.onrender.com/api/topics
-- Comments: https://nc-news-qvgz.onrender.com/api/articles/:article_id/comments
-
-# Project Summary
+## Project Summary
 
 This is a backend project leveraging Node.js, PostgreSQL and Express.js framework to build RESTful API.
 The API enables clients to perform CRUD (Create, Read, Update, Delete) operations by making HTTP requests to a relational database.
 
 The project has been thoroughly tested using Jest framework and Supertest library to ensure the endpoints respond as expected.
 
-# Run Locally
+## Live Endpoints
+
+The available endpoints and expected responses are documented within the 'endpoints.json' file at the root of this repository. 
+You can also access the live version via the URL ( https://nc-news-qvgz.onrender.com/api ).
+
+Below are some examples of the currently live endpoints available.
+- Articles: https://nc-news-qvgz.onrender.com/api/articles
+- Users: https://nc-news-qvgz.onrender.com/api/users
+- Topics: https://nc-news-qvgz.onrender.com/api/topics
+
+CRUD Operation examples using the article table within the database.
+- POST (create): https://nc-news-qvgz.onrender.com/api/articles
+- GET (read): https://nc-news-qvgz.onrender.com/api/articles/:article_id
+- PATCH (update): https://nc-news-qvgz.onrender.com/api/articles/:article_id
+- DELETE (delete): https://nc-news-qvgz.onrender.com/api/articles/:article_id
+
+## Run Locally
 
 - How to clone repository using CLI (Command Line Interface)
 1. Install git (https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and node (https://nodejs.org/en/download/)
