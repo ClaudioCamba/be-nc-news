@@ -29,7 +29,7 @@ CRUD Operation examples using the article table within the database.
 ## Run Locally
 
 1. Install git (https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and node (https://nodejs.org/en/download/)
-2. Run the following command `git clone https://github.com/ClaudioCamba/be-nc-news.git` in the CLI
+2. Clone this repository by running the following command `git clone https://github.com/ClaudioCamba/be-nc-news.git` in the terminal / CLI
 3. Install the project dependencies by running the following command `npm install`
 4. Create .env.development and .env.test files in the be-nc-news root directory
 5. Assign database to each file (.env.test file should have `PGDATABASE=nc_news_test` and for .env.development `PGDATABASE=nc_news`). The database name can be found in (db/ seeds/ setup.sql), assign appropriate database names in each file. 
